@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>StudyGate</title>
+    <style>
+        :root {
+            --bg: #000000;
+            --card: #1c1c1e;
+            --card-secondary: #2c2c2e;
+            --accent: #0a84ff;
+            --success: #30d158;
+            --danger: #ff453a;
+            --text: #ffffff;
+            --text-secondary: #8e8e93;
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            margin: 0; padding: 24px 16px;
+            background-color: var(--bg); color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            display: flex; flex-direction: column; min-height: 100vh;
+            justify-content: center;
+        }
+        .container { max-width: 420px; margin: 0 auto; width: 100%; }
+        .header { text-align: center; margin-bottom: 24px; }
+        .lock-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(255, 69, 58, 0.15); color: var(--danger);
+            padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 14px;
+            margin-bottom: 12px;
+        }
+        h1 { font-size: 28px; font-weight: 700; margin: 0; letter-spacing: -0.5px; }
+        .subtitle { color: var(--text-secondary); font-size: 15px; margin-top: 6px; }
+        .card {
+            background-color: var(--card); border-radius: 20px;
+            padding: 22px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.07);
+        }
+        .subject-tag {
+            display: inline-block; background: rgba(10, 132, 255, 0.18);
+            color: var(--accent); font-size: 12px; font-weight: 700;
+            text-transform: uppercase; padding: 5px 10px; border-radius: 8px;
+            letter-spacing: 0.6px; margin-bottom: 14px;
+        }
+        .question-text {
+            font-size: 18px; font-weight: 600; line-height: 1.45;
+            margin: 0 0 20px 0;
+        }
+        .options-list { display: flex; flex-direction: column; gap: 12px; }
+        .option-btn {
+            background-color: var(--card-secondary); color: var(--text);
+            border: 1.5px solid transparent; border-radius: 14px;
+            padding: 15px 16px; text-align: left; font-size: 16px;
+            font-weight: 500; line-height: 1.35; cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .option-btn:active { transform: scale(0.98); }
+        .option-btn.correct {
+            background-color: rgba(48, 209, 88, 0.2);
+            border-color: var(--success); color: #fff;
+        }
+        .option-btn.wrong {
+            background-color: rgba(255, 69, 58, 0.2);
+            border-color: var(--danger); color: #fff;
+        }
+        .explanation {
+            margin-top: 18px; padding: 14px; border-radius: 12px;
+            background: rgba(255,255,255,0.05); font-size: 14px;
+            line-height: 1.45; color: #d1d1d6; display: none;
+        }
+        .unlock-btn {
+            margin-top: 18px; width: 100%; background-color: var(--success);
+            color: #000; font-weight: 700; font-size: 17px;
+            padding: 16px; border-radius: 14px; border: none;
+            cursor: pointer; display: none; text-align: center;
+            text-decoration: none;
+        }
+        .penalty-msg {
+            margin-top: 14px; color: var(--danger); font-size: 14px;
+            text-align: center; font-weight: 600; display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="lock-badge" id="badge">🔒 Entretenimiento Bloqueado</div>
+        <h1>StudyGate</h1>
+        <div class="subtitle">Resuelve para desbloquear durante 15 min</div>
+    </div>
+
+    <div class="card">
+        <span class="subject-tag" id="subject">Asignatura</span>
+        <p class="question-text" id="prompt">Cargando pregunta...</p>
+        <div class="options-list" id="options"></div>
+        <div class="explanation" id="explanation"></div>
+        <div class="penalty-msg" id="penalty">Respuesta incorrecta. Cargando nueva pregunta en 3s...</div>
+        
+        <!-- Este botón llama al Atajo de iOS que registra los 15 minutos libres -->
+        <a id="unlockBtn" class="unlock-btn" href="shortcuts://run-shortcut?name=ConcederPase">
+            🔓 Activar 15 min de acceso
+        </a>
+    </div>
+</div>
+
+<script>
+const questions = [
+    {
+        subject: "Topología y espacios métricos",
+        prompt: "Sea (X, d) un espacio métrico y A ⊂ X. ¿Cuál de las siguientes propiedades es siempre equivalente a que A sea compacto?",
+        options: [
+            "A es cerrado y acotado en (X, d)",
+            "Toda sucesión en A admite una subsucesión que converge a un punto de A",
+            "El interior de A es no vacío y su frontera es finita",
+            "Toda función continua f: A → ℝ es constante"
+        ],
+        correct: 1,
+        explanation: "En espacios métricos, la compacidad por recubrimientos abiertos equivale siempre a la compacidad secuencial (Teorema de Bolzano-Weierstrass generalizado). Cerrado y acotado solo implica compacto en espacios con la propiedad de Heine-Borel como ℝⁿ."
+    },
+    {
+        subject: "Análisis Real",
+        prompt: "Si una sucesión de funciones continuas (fₙ) converge puntualmente a f en [a, b], ¿qué condición adicional garantiza que f sea continua en [a, b]?",
+        options: [
+            "Que cada fₙ sea derivable en (a, b)",
+            "Que la sucesión (fₙ) sea acotada puntualmente",
+            "Que la convergencia fₙ → f sea uniforme en [a, b]",
+            "Que f(a) = f(b)"
+        ],
+        correct: 2,
+        explanation: "El límite uniforme de funciones continuas es siempre una función continua."
+    },
+    {
+        subject: "Teoría de Grupos",
+        prompt: "Sea G un grupo y H ≤ G un subgrupo de índice 2 ([G : H] = 2). ¿Cuál de estas afirmaciones es siempre verdadera?",
+        options: [
+            "H es un subgrupo normal de G",
+            "H es abeliano",
+            "G es isomorfo a H × ℤ₂",
+            "El orden de G es par y finito"
+        ],
+        correct: 0,
+        explanation: "Si [G : H] = 2, solo hay dos clases laterales izquierdas (H y gH) y dos derechas (H y Hg). Como particionan G, para todo g ∉ H se cumple gH = G \\ H = Hg, luego H ◁ G."
+    },
+    {
+        subject: "English Grammar • C1 Advanced",
+        prompt: "Choose the correct inversion: '_______ the torrential rain, the outdoor concert went ahead as planned.'",
+        options: [
+            "However heavy was",
+            "Richly though it rained",
+            "Be that as it may",
+            "Much as it rained"
+        ],
+        // Añadimos otra opción más clásica de C1
+        prompt: "Complete the sentence: '_______ had the committee reached a consensus than a new objection was raised.'",
+        options: [
+            "Hardly",
+            "Scarcely",
+            "No sooner",
+            "Barely"
+        ],
+        correct: 2,
+        explanation: "En inversiones negativas de tiempo, 'No sooner' exige la conjunción 'than', mientras que 'Hardly', 'Scarcely' y 'Barely' van acompañadas de 'when'."
+    },
+    {
+        subject: "English Grammar • C1 Advanced",
+        prompt: "Select the correct structure: 'Had it not been for your timely intervention, the project _______ entirely.'",
+        options: [
+            "would collapse",
+            "would have collapsed",
+            "will have collapsed",
+            "had collapsed"
+        ],
+        correct: 1,
+        explanation: "Es una inversión condicional de tercer tipo (Third Conditional: 'Had it not been for...' = 'If it hadn't been for...'), por lo que la oración principal requiere 'would have + past participle'."
+    },
+    {
+        subject: "Topología General",
+        prompt: "Para que una familia ℬ de subconjuntos de X sea base de una topología sobre X, debe cubrir X y además para cualesquiera B₁, B₂ ∈ ℬ y cada x ∈ B₁ ∩ B₂:",
+        options: [
+            "B₁ ∩ B₂ debe pertenecer directamente a ℬ",
+            "Debe existir B₃ ∈ ℬ tal que x ∈ B₃ ⊂ B₁ ∩ B₂",
+            "B₁ ∪ B₂ debe pertenecer a ℬ",
+            "X \\ B₁ debe pertenecer a ℬ"
+        ],
+        correct: 1,
+        explanation: "La condición de base exige que la intersección de dos elementos básicos pueda escribirse como unión de elementos de la base, es decir, para cada punto en B₁ ∩ B₂ existe B₃ ∈ ℬ con x ∈ B₃ ⊂ B₁ ∩ B₂."
+    }
+];
+
+let currentQ = {};
+let answered = false;
+
+function loadQuestion() {
+    answered = false;
+    document.getElementById('explanation').style.display = 'none';
+    document.getElementById('unlockBtn').style.display = 'none';
+    document.getElementById('penalty').style.display = 'none';
+    
+    currentQ = questions[Math.floor(Math.random() * questions.length)];
+    document.getElementById('subject').textContent = currentQ.subject;
+    document.getElementById('prompt').textContent = currentQ.prompt;
+    
+    const optionsEl = document.getElementById('options');
+    optionsEl.innerHTML = '';
+    
+    currentQ.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.textContent = opt;
+        btn.onclick = () => selectOption(idx, btn);
+        optionsEl.appendChild(btn);
+    });
+}
+
+function selectOption(idx, btn) {
+    if (answered) return;
+    answered = true;
+    
+    const buttons = document.querySelectorAll('.option-btn');
+    if (idx === currentQ.correct) {
+        btn.classList.add('correct');
+        const exp = document.getElementById('explanation');
+        exp.textContent = "✅ " + currentQ.explanation;
+        exp.style.display = 'block';
+        document.getElementById('unlockBtn').style.display = 'block';
+        document.getElementById('badge').innerHTML = "🔓 Reto Superado";
+        document.getElementById('badge').style.background = "rgba(48, 209, 88, 0.15)";
+        document.getElementById('badge').style.color = "#30d158";
+    } else {
+        btn.classList.add('wrong');
+        buttons[currentQ.correct].classList.add('correct');
+        document.getElementById('penalty').style.display = 'block';
+        setTimeout(loadQuestion, 3200);
+    }
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
