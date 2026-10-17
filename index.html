@@ -5,58 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>StudyGate</title>
+    <title>StudyGate Pro</title>
     <style>
         :root {
             --bg: #000000;
             --card: #1c1c1e;
             --card-secondary: #2c2c2e;
             --accent: #0a84ff;
+            --warning: #ff9f0a;
             --success: #30d158;
             --danger: #ff453a;
+            --purple: #bf5af2;
             --text: #ffffff;
             --text-secondary: #8e8e93;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
-            margin: 0; padding: 24px 16px;
+            margin: 0; padding: 20px 16px;
             background-color: var(--bg); color: var(--text);
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
             display: flex; flex-direction: column; min-height: 100vh;
             justify-content: center;
         }
-        .container { max-width: 420px; margin: 0 auto; width: 100%; }
-        .header { text-align: center; margin-bottom: 24px; }
+        .container { max-width: 440px; margin: 0 auto; width: 100%; }
+        .header { text-align: center; margin-bottom: 20px; }
         .lock-badge {
             display: inline-flex; align-items: center; gap: 8px;
             background: rgba(255, 69, 58, 0.15); color: var(--danger);
-            padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 14px;
-            margin-bottom: 12px;
+            padding: 7px 15px; border-radius: 20px; font-weight: 600; font-size: 13px;
+            margin-bottom: 10px; transition: all 0.3s ease;
         }
-        h1 { font-size: 28px; font-weight: 700; margin: 0; letter-spacing: -0.5px; }
-        .subtitle { color: var(--text-secondary); font-size: 15px; margin-top: 6px; }
+        h1 { font-size: 26px; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
+        .subtitle { color: var(--text-secondary); font-size: 14px; margin-top: 5px; }
         .card {
-            background-color: var(--card); border-radius: 20px;
-            padding: 22px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.07);
+            background-color: var(--card); border-radius: 22px;
+            padding: 22px; box-shadow: 0 12px 34px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.08);
         }
         .subject-tag {
             display: inline-block; background: rgba(10, 132, 255, 0.18);
-            color: var(--accent); font-size: 12px; font-weight: 700;
+            color: var(--accent); font-size: 11px; font-weight: 700;
             text-transform: uppercase; padding: 5px 10px; border-radius: 8px;
             letter-spacing: 0.6px; margin-bottom: 14px;
         }
         .question-text {
-            font-size: 18px; font-weight: 600; line-height: 1.45;
-            margin: 0 0 20px 0;
+            font-size: 17px; font-weight: 600; line-height: 1.45;
+            margin: 0 0 18px 0;
         }
-        .options-list { display: flex; flex-direction: column; gap: 12px; }
+        .options-list { display: flex; flex-direction: column; gap: 10px; }
         .option-btn {
             background-color: var(--card-secondary); color: var(--text);
             border: 1.5px solid transparent; border-radius: 14px;
-            padding: 15px 16px; text-align: left; font-size: 16px;
+            padding: 14px 15px; text-align: left; font-size: 15px;
             font-weight: 500; line-height: 1.35; cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.18s ease;
         }
         .option-btn:active { transform: scale(0.98); }
         .option-btn.correct {
@@ -68,20 +70,37 @@
             border-color: var(--danger); color: #fff;
         }
         .explanation {
-            margin-top: 18px; padding: 14px; border-radius: 12px;
-            background: rgba(255,255,255,0.05); font-size: 14px;
+            margin-top: 16px; padding: 14px; border-radius: 12px;
+            background: rgba(255,255,255,0.05); font-size: 13.5px;
             line-height: 1.45; color: #d1d1d6; display: none;
         }
-        .unlock-btn {
-            margin-top: 18px; width: 100%; background-color: var(--success);
-            color: #000; font-weight: 700; font-size: 17px;
-            padding: 16px; border-radius: 14px; border: none;
-            cursor: pointer; display: none; text-align: center;
-            text-decoration: none;
+        .action-area { margin-top: 18px; display: none; flex-direction: column; gap: 10px; }
+        .btn {
+            width: 100%; font-weight: 700; font-size: 16px;
+            padding: 15px; border-radius: 14px; border: none;
+            cursor: pointer; text-align: center; text-decoration: none;
+            display: block; transition: opacity 0.2s;
         }
-        .penalty-msg {
-            margin-top: 14px; color: var(--danger); font-size: 14px;
-            text-align: center; font-weight: 600; display: none;
+        .btn-success { background-color: var(--success); color: #000; }
+        .btn-double {
+            background: linear-gradient(135deg, #ff9f0a, #ff375f);
+            color: #fff; box-shadow: 0 4px 15px rgba(255, 55, 95, 0.35);
+        }
+        .btn-surrender {
+            background-color: rgba(255, 69, 58, 0.15);
+            color: var(--danger); border: 1px solid rgba(255, 69, 58, 0.3);
+        }
+        /* Vista de bloqueo por castigo */
+        .lockout-view {
+            text-align: center; padding: 20px 10px; display: none;
+        }
+        .timer-circle {
+            font-size: 46px; font-weight: 800; color: var(--danger);
+            font-variant-numeric: tabular-nums; margin: 18px 0;
+            letter-spacing: 1px;
+        }
+        .lockout-desc {
+            color: var(--text-secondary); font-size: 14px; line-height: 1.5;
         }
     </style>
 </head>
@@ -91,117 +110,765 @@
     <div class="header">
         <div class="lock-badge" id="badge">🔒 Entretenimiento Bloqueado</div>
         <h1>StudyGate</h1>
-        <div class="subtitle">Resuelve para desbloquear durante 15 min</div>
+        <div class="subtitle" id="subtitle">1 fallo = 15 min bloqueado o Doble o Nada</div>
     </div>
 
-    <div class="card">
+    <!-- TARJETA DE EXAMEN -->
+    <div class="card" id="quizCard">
         <span class="subject-tag" id="subject">Asignatura</span>
         <p class="question-text" id="prompt">Cargando pregunta...</p>
         <div class="options-list" id="options"></div>
         <div class="explanation" id="explanation"></div>
-        <div class="penalty-msg" id="penalty">Respuesta incorrecta. Cargando nueva pregunta en 3s...</div>
         
-        <!-- Este botón llama al Atajo de iOS que registra los 15 minutos libres -->
-        <a id="unlockBtn" class="unlock-btn" href="shortcuts://run-shortcut?name=ConcederPase">
-            🔓 Activar 15 min de acceso
-        </a>
+        <div class="action-area" id="actionArea"></div>
+    </div>
+
+    <!-- TARJETA DE PENALIZACIÓN TEMPORAL -->
+    <div class="card lockout-view" id="lockoutCard">
+        <div style="font-size: 48px;">⏳</div>
+        <h2 style="margin: 10px 0 4px 0; font-size: 22px;" id="lockoutTitle">Castigo Activo</h2>
+        <div class="timer-circle" id="timerDisplay">15:00</div>
+        <p class="lockout-desc" id="lockoutReason">
+            Has fallado la pregunta. No tienes intentos ilimitados: debes esperar a que termine el bloqueo para volver a intentarlo.
+        </p>
     </div>
 </div>
 
 <script>
 const questions = [
+    // ================= ANÁLISIS MATEMÁTICO (20 PREGUNTAS) =================
     {
-        subject: "Topología y espacios métricos",
-        prompt: "Sea (X, d) un espacio métrico y A ⊂ X. ¿Cuál de las siguientes propiedades es siempre equivalente a que A sea compacto?",
+        subject: "Análisis • Normas y Productos Escalares",
+        prompt: "Por el Teorema de Jordan-von Neumann, ¿para qué valores de p ∈ [1, ∞] la norma ||·||ₚ en ℝⁿ (n ≥ 2) procede de un producto escalar?",
         options: [
-            "A es cerrado y acotado en (X, d)",
-            "Toda sucesión en A admite una subsucesión que converge a un punto de A",
-            "El interior de A es no vacío y su frontera es finita",
-            "Toda función continua f: A → ℝ es constante"
+            "Para todo 1 < p < ∞",
+            "Única y exclusivamente para p = 2",
+            "Para p = 1, p = 2 y p = ∞",
+            "Para ningún valor si n > 3"
         ],
         correct: 1,
-        explanation: "En espacios métricos, la compacidad por recubrimientos abiertos equivale siempre a la compacidad secuencial (Teorema de Bolzano-Weierstrass generalizado). Cerrado y acotado solo implica compacto en espacios con la propiedad de Heine-Borel como ℝⁿ."
+        explanation: "Una norma procede de un producto escalar si y solo si satisface la identidad del paralelogramo ||x+y||² + ||x-y||² = 2(||x||² + ||y||²). Evaluando en e₁ y e₂ se obtiene 2^(1+2/p) = 4, que solo se cumple para p = 2."
     },
     {
-        subject: "Análisis Real",
-        prompt: "Si una sucesión de funciones continuas (fₙ) converge puntualmente a f en [a, b], ¿qué condición adicional garantiza que f sea continua en [a, b]?",
+        subject: "Análisis • Geometría de Normas",
+        prompt: "¿Por qué la expresión ||x||ₚ = (∑ |xᵢ|ᵖ)^(1/p) deja de ser una norma en ℝⁿ (n ≥ 2) cuando 0 < p < 1?",
         options: [
-            "Que cada fₙ sea derivable en (a, b)",
-            "Que la sucesión (fₙ) sea acotada puntualmente",
-            "Que la convergencia fₙ → f sea uniforme en [a, b]",
-            "Que f(a) = f(b)"
+            "Porque deja de cumplir la homogeneidad ||λx|| = |λ| ||x||",
+            "Porque puede tomar valores negativos",
+            "Porque viola la desigualdad triangular (las bolas unidad pierden la convexidad)",
+            "Porque se anula en vectores distintos del origen"
         ],
         correct: 2,
-        explanation: "El límite uniforme de funciones continuas es siempre una función continua."
+        explanation: "Para 0 < p < 1 se tiene ||e₁ + e₂||ₚ = 2^(1/p) > 2 = ||e₁||ₚ + ||e₂||ₚ, violando la desigualdad triangular."
     },
     {
-        subject: "Teoría de Grupos",
-        prompt: "Sea G un grupo y H ≤ G un subgrupo de índice 2 ([G : H] = 2). ¿Cuál de estas afirmaciones es siempre verdadera?",
+        subject: "Análisis • Equivalencia de Normas",
+        prompt: "En ℝⁿ, ¿cuáles son las constantes óptimas de equivalencia que relacionan ||x||₂ y ||x||₁ para todo x ∈ ℝⁿ?",
         options: [
-            "H es un subgrupo normal de G",
-            "H es abeliano",
-            "G es isomorfo a H × ℤ₂",
-            "El orden de G es par y finito"
+            "||x||₁ ≤ ||x||₂ ≤ √n ||x||₁",
+            "||x||₂ ≤ ||x||₁ ≤ √n ||x||₂",
+            "||x||₂ ≤ ||x||₁ ≤ n ||x||₂",
+            "(1/n)||x||₂ ≤ ||x||₁ ≤ ||x||₂"
+        ],
+        correct: 1,
+        explanation: "Elevando al cuadrado se ve que ||x||₂ ≤ ||x||₁, y aplicando Cauchy-Schwarz al vector (|x₁|,...,|xₙ|) con (1,...,1) se obtiene ||x||₁ ≤ √n ||x||₂."
+    },
+    {
+        subject: "Análisis • Operadores Lineales Acotados",
+        prompt: "Sea V = C¹([0,1]) con la norma del supremo ||·||_∞ y D: V → C([0,1]) el operador lineal de derivación D(f) = f'. ¿Cuál de las siguientes afirmaciones es cierta?",
+        options: [
+            "D es acotado con norma ||D|| = 1",
+            "D es continuo en f = 0 pero discontinuo en el resto",
+            "D no es acotado (y por tanto es discontinuo en todo punto)",
+            "Como toda aplicación lineal entre espacios normados es continua, D es continuo"
+        ],
+        correct: 2,
+        explanation: "Tomando fₙ(t) = tⁿ, se tiene ||fₙ||_∞ = 1 pero ||D(fₙ)||_∞ = sup(n tⁿ⁻¹) = n → ∞. En dimensión infinita existen operadores lineales no acotados."
+    },
+    {
+        subject: "Análisis • Teorema de Riesz y Compacidad",
+        prompt: "¿Qué ocurre con la bola unidad cerrada B̄(0, 1) en un espacio vectorial normado de dimensión infinita (como ℓ²)?",
+        options: [
+            "Es compacta por el Teorema de Heine-Borel",
+            "Es cerrada y acotada, pero NUNCA es compacta",
+            "No es cerrada en la topología métrica",
+            "Es secuencialmente compacta pero no por recubrimientos"
+        ],
+        correct: 1,
+        explanation: "El Teorema de Heine-Borel falla en dimensión infinita. Por ejemplo, en ℓ² la sucesión canónica {eₙ} cumple ||eₙ||₂ = 1 pero ||eₙ - eₘ||₂ = √2 para n ≠ m, luego no admite subsucesiones convergentes."
+    },
+    {
+        subject: "Análisis • Límites en Varias Variables",
+        prompt: "Sea f(x,y) = (x y²) / (x² + y⁴) para (x,y) ≠ (0,0) y f(0,0) = 0. ¿Qué ocurre con el límite de f cuando (x,y) → (0,0)?",
+        options: [
+            "Existe y vale 0 porque a lo largo de todas las rectas y = mx e x = 0 el límite es 0",
+            "No existe, porque sobre las parábolas x = my² el límite vale m/(m² + 1), que depende de m",
+            "Existe y vale 1/2 por acotación con la norma euclídea",
+            "Tiende a +∞ sobre la curva y = x²"
+        ],
+        correct: 1,
+        explanation: "Es el contraejemplo clásico: aunque sobre cualquier recta el límite es 0, al aproximarse por x = y² tiende a 1/2 ≠ 0, luego el límite global no existe."
+    },
+    {
+        subject: "Análisis • Límites en Varias Variables",
+        prompt: "Considera f(x,y) = (x² y) / (|x|³ + |y|^(3/2)) para (x,y) ≠ (0,0). ¿Existe el límite en el origen?",
+        options: [
+            "No existe porque al evaluar en y = x² da 1/2",
+            "Sí existe y vale 0, pues se acota por (|x|³ + |y|^(3/2))^(1/3) → 0",
+            "No existe porque el denominador tiene exponentes fraccionarios",
+            "Sí existe y vale 1"
+        ],
+        correct: 1,
+        explanation: "Como x² ≤ (|x|³ + |y|^(3/2))^(2/3) y |y| ≤ (|x|³ + |y|^(3/2))^(2/3), su producto tiene grado equivalente 4/3 > 1 respecto al denominador, por lo que tiende a 0."
+    },
+    {
+        subject: "Análisis • Convergencia Uniforme",
+        prompt: "Sea fₙ(x) = xⁿ definida en el intervalo semiabierto X = [0, 1). ¿Cuál es su comportamiento cuando n → ∞?",
+        options: [
+            "Converge uniformemente a f(x) = 0 porque el límite puntual es continuo en [0, 1)",
+            "Converge puntualmente a f(x) = 0, pero NO uniformemente pues sup_{x∈[0,1)} |xⁿ - 0| = 1",
+            "No converge puntualmente en [0, 1)",
+            "Converge uniformemente en [0, 1) pero no en [0, 1]"
+        ],
+        correct: 1,
+        explanation: "Muestra que el recíproco del teorema de continuidad del límite uniforme es falso: aunque fₙ y el límite f(x) = 0 son continuas en [0,1), la norma infinito ||fₙ - 0||_∞ = 1 no tiende a 0."
+    },
+    {
+        subject: "Análisis • Convergencia Uniforme",
+        prompt: "En X = (0, ∞), definimos fₖ(x) = 1/x si 0 < x ≤ k, y fₖ(x) = 0 si x > k. ¿Converge {fₖ} uniformemente a f(x) = 1/x en (0, ∞)?",
+        options: [
+            "No, porque ni las fₖ ni f son funciones acotadas en (0, ∞)",
+            "Sí, porque la diferencia |fₖ(x) - f(x)| sí es acotada y ||fₖ - f||_∞ = 1/k → 0",
+            "No, porque en x → 0⁺ el error tiende a infinito",
+            "Solo converge uniformemente en compactos [a, b] ⊂ (0, ∞)"
+        ],
+        correct: 1,
+        explanation: "En (0, k] la diferencia fₖ(x) - f(x) es idénticamente 0 (la singularidad en 0 se cancela), y para x > k vale 1/x < 1/k. Luego ||fₖ - f||_∞ = 1/k → 0."
+    },
+    {
+        subject: "Análisis • Derivación e Integración",
+        prompt: "Sea fₖ(x) = sin(kx)/√k en ℝ. Cuando k → ∞, ¿qué ocurre con la sucesión y sus derivadas?",
+        options: [
+            "fₖ → 0 uniformemente en ℝ y f'ₖ → 0 puntualmente",
+            "fₖ → 0 uniformemente en ℝ, pero f'ₖ(0) = √k → +∞ no converge a f'(0) = 0",
+            "fₖ solo converge puntualmente pero no uniformemente",
+            "Como fₖ son C^∞ y convergen uniformemente, se puede derivar término a término"
+        ],
+        correct: 1,
+        explanation: "La convergencia uniforme de fₖ NO basta para intercambiar límite y derivada: hace falta la convergencia uniforme de la sucesión de las derivadas {f'ₖ}."
+    },
+    {
+        subject: "Análisis • Teorema de Ascoli-Arzelà",
+        prompt: "Si {fₖ} es una sucesión en C([0,1]) tal que |fₖ(x)| ≤ 100 y |f'ₖ(x)| ≤ 100 para todo x ∈ [0,1] y todo k ∈ ℕ, ¿por qué podemos asegurar que tiene una subsucesión uniformemente convergente?",
+        options: [
+            "Porque toda bola cerrada de C([0,1]) es compacta por Heine-Borel",
+            "Porque la cota uniforme de las derivadas implica, por el Teorema del Valor Medio, que la familia es equicontinua (Lipschitz con constante 100)",
+            "Porque converge puntualmente a una función constante",
+            "Por el Criterio M de Weierstrass"
+        ],
+        correct: 1,
+        explanation: "Por el TVM, |fₖ(x) - fₖ(y)| ≤ 100|x - y|, lo que garantiza equicontinuidad. Junto a la acotación puntual y la compacidad de [0,1], el Teorema de Ascoli-Arzelà concluye el resultado."
+    },
+    {
+        subject: "Análisis • Polinomios de Bernstein",
+        prompt: "En la demostración constructiva del Teorema de Aproximación de Weierstrass mediante polinomios de Bernstein en [0,1], ¿cuánto vale exactamente la suma ∑_{k=0}^n (k - nx)² binom(n,k) xᵏ (1-x)ⁿ⁻ᵏ?",
+        options: [
+            "1",
+            "nx",
+            "nx(1 - x)",
+            "n²x²(1 - x)²"
+        ],
+        correct: 2,
+        explanation: "Representa la varianza de una distribución Binomial B(n, x), cuyo valor exacto es nx(1-x) ≤ n/4, lo que permite acotar la suma sobre los índices lejanos |k/n - x| > δ."
+    },
+    {
+        subject: "Análisis • Funciones Analíticas",
+        prompt: "Sea f(x) = e^(-1/x²) para x ≠ 0 y f(0) = 0. ¿Cuál de las siguientes afirmaciones sobre f en ℝ es verdadera?",
+        options: [
+            "No es derivable en x = 0",
+            "Es de clase C^∞(ℝ) y analítica en todo ℝ",
+            "Es de clase C^∞(ℝ), pero NO es analítica en x = 0 porque su serie de Taylor en 0 es idénticamente nula",
+            "Su serie de Taylor en x = 0 tiene radio de convergencia R = 0"
+        ],
+        correct: 2,
+        explanation: "Todas sus derivadas en el origen valen f^(k)(0) = 0. Su serie de Taylor en 0 converge a la función nula, que no coincide con f(x) > 0 en ningún entorno perforado de 0."
+    },
+    {
+        subject: "Análisis • Series de Potencias y EDOs",
+        prompt: "Al resolver la ecuación diferencial y'' + xy = 1 mediante series de potencias y(x) = ∑ aₙxⁿ centrada en x₀ = 0, ¿qué relación de recurrencia cumplen los coeficientes para n ≥ 1?",
+        options: [
+            "a₂ = 1/2 y a_{n+2} = -a_{n-1} / [(n+2)(n+1)]",
+            "a₂ = 0 y a_{n+2} = -aₙ / (n+2)",
+            "a₂ = 1 y a_{n+1} = a_{n-1} / (n+1)",
+            "Tiene radio de convergencia finito R = 1"
         ],
         correct: 0,
-        explanation: "Si [G : H] = 2, solo hay dos clases laterales izquierdas (H y gH) y dos derechas (H y Hg). Como particionan G, para todo g ∉ H se cumple gH = G \\ H = Hg, luego H ◁ G."
+        explanation: "Igualando potencias en 2a₂ + ∑ [(n+2)(n+1)a_{n+2} + a_{n-1}]xⁿ = 1 se obtiene a₂ = 1/2 y saltos de 3 en 3 con radio de convergencia R = +∞."
     },
     {
-        subject: "English Grammar • C1 Advanced",
-        prompt: "Choose the correct inversion: '_______ the torrential rain, the outdoor concert went ahead as planned.'",
+        subject: "Análisis • Sistemas Ortonormales",
+        prompt: "En un espacio con producto escalar (X, ⟨·,·⟩) y un sistema ortonormal {φₖ}, ¿qué afirma la Identidad de Plancherel (o Parseval)?",
         options: [
-            "However heavy was",
-            "Richly though it rained",
-            "Be that as it may",
-            "Much as it rained"
+            "Que ∑ |⟨u, φₖ⟩| ≤ ||u|| para todo u ∈ X",
+            "Que el sistema es completo (base hilbertiana) si y solo si ||u||² = ∑_{k=1}^∞ |⟨u, φₖ⟩|² para todo u ∈ X",
+            "Que toda serie ortonormal converge uniformemente",
+            "Que ⟨u, φₖ⟩ = 0 para todo k suficientemente grande"
         ],
-        // Añadimos otra opción más clásica de C1
-        prompt: "Complete the sentence: '_______ had the committee reached a consensus than a new objection was raised.'",
+        correct: 1,
+        explanation: "Por la identidad de Bessel ||u - ∑_{k=1}^N û(k)φₖ||² = ||u||² - ∑_{k=1}^N |û(k)|², la convergencia en norma a u equivale exactamente a que la suma de cuadrados de los coeficientes iguale a ||u||²."
+    },
+    {
+        subject: "Análisis • Series de Fourier",
+        prompt: "Respecto al espacio C_s(𝕋) de funciones 2π-periódicas continuas a trozos dotado de la norma cuadrática ||f||₂ = (∫₀²π |f(x)|² dx)^(1/2), ¿cuál de estas afirmaciones es cierta?",
         options: [
-            "Hardly",
-            "Scarcely",
-            "No sooner",
-            "Barely"
+            "Es un espacio de Banach completo",
+            "La convergencia en norma L² de la serie de Fourier implica siempre la convergencia puntual en todo punto",
+            "No es un espacio métrico completo, y existen funciones continuas en C(𝕋) cuya serie de Fourier diverge en un punto",
+            "El sistema trigonométrico no es completo en C_s(𝕋)"
         ],
         correct: 2,
-        explanation: "En inversiones negativas de tiempo, 'No sooner' exige la conjunción 'than', mientras que 'Hardly', 'Scarcely' y 'Barely' van acompañadas de 'when'."
+        explanation: "(C_s(𝕋), ||·||₂) no es completo (su completación es L²(𝕋)), y como demostró du Bois-Reymond, la continuidad por sí sola no garantiza la convergencia puntual de la serie de Fourier."
     },
     {
-        subject: "English Grammar • C1 Advanced",
-        prompt: "Select the correct structure: 'Had it not been for your timely intervention, the project _______ entirely.'",
+        subject: "Análisis • Teorema de Dirichlet",
+        prompt: "Sea f ∈ C_s(𝕋) tal que f' ∈ C_s(𝕋), definida en (0, 2π) por f(x) = x. ¿A qué valor converge puntualmente su serie de Fourier en x = 0 (y en x = 2π)?",
         options: [
-            "would collapse",
-            "would have collapsed",
-            "will have collapsed",
-            "had collapsed"
+            "A 0",
+            "A 2π",
+            "A π (la semisuma de los límites laterales [f(0⁺) + f(0⁻)] / 2)",
+            "Diverge porque f es discontinua en 0"
         ],
-        correct: 1,
-        explanation: "Es una inversión condicional de tercer tipo (Third Conditional: 'Had it not been for...' = 'If it hadn't been for...'), por lo que la oración principal requiere 'would have + past participle'."
+        correct: 2,
+        explanation: "Por el Teorema de Dirichlet, en una discontinuidad de salto la serie de Fourier converge al punto medio del salto: (0 + 2π)/2 = π."
     },
     {
-        subject: "Topología General",
-        prompt: "Para que una familia ℬ de subconjuntos de X sea base de una topología sobre X, debe cubrir X y además para cualesquiera B₁, B₂ ∈ ℬ y cada x ∈ B₁ ∩ B₂:",
+        subject: "Análisis • Series de Fourier y Regularidad",
+        prompt: "En la demostración de que toda función f ∈ C¹(𝕋) tiene una serie de Fourier que converge uniforme y absolutamente a f en ℝ, ¿qué identidad clave permite aplicar la desigualdad de Bessel a f'?",
         options: [
-            "B₁ ∩ B₂ debe pertenecer directamente a ℬ",
-            "Debe existir B₃ ∈ ℬ tal que x ∈ B₃ ⊂ B₁ ∩ B₂",
-            "B₁ ∪ B₂ debe pertenecer a ℬ",
-            "X \\ B₁ debe pertenecer a ℬ"
+            "Integrando por partes se obtiene aₙ = -b'ₙ / n y bₙ = a'ₙ / n, y luego se acota (1/n)|b'ₙ| ≤ (1/2)(1/n² + |b'ₙ|²)",
+            "Que los coeficientes aₙ son todos nulos para n > 1",
+            "El Teorema de Ascoli-Arzelà aplicado a las sumas parciales",
+            "Que |aₙ| ≤ 1/n para toda función integrable"
+        ],
+        correct: 0,
+        explanation: "Al ser f continua y 2π-periódica (f(0)=f(2π)), la integración por partes relaciona los coeficientes de f con los de f' divididos por n. Combinando Young (uv ≤ (u²+v²)/2) y Bessel para f' se logra aplicar el Criterio M de Weierstrass."
+    },
+
+    // ================= ÁLGEBRA I: TEORÍA DE GRUPOS (12 PREGUNTAS) =================
+    {
+        subject: "Álgebra I • Criterio de Subgrupo",
+        prompt: "Sea G un grupo y H ⊆ G un subconjunto NO vacío. ¿Bajo qué condición adicional basta comprobar únicamente que H es cerrado para el producto (∀ h₁, h₂ ∈ H, h₁h₂ ∈ H) para asegurar que H ≤ G?",
+        options: [
+            "Cuando G es un grupo abeliano (por ejemplo, ℕ en ℤ)",
+            "Cuando H es un conjunto FINITO",
+            "Cuando G es infinito",
+            "Siempre basta comprobar que es cerrado para el producto"
         ],
         correct: 1,
-        explanation: "La condición de base exige que la intersección de dos elementos básicos pueda escribirse como unión de elementos de la base, es decir, para cada punto en B₁ ∩ B₂ existe B₃ ∈ ℬ con x ∈ B₃ ⊂ B₁ ∩ B₂."
+        explanation: "Si H es finito y cerrado para el producto, para cada h ∈ H la aplicación x ↦ hx es inyectiva y por tanto biyectiva en H, garantizando el neutro y los inversos (en cambio, ℕ ⊂ ℤ es cerrado para la suma pero no es subgrupo)."
+    },
+    {
+        subject: "Álgebra I • Órdenes de Elementos",
+        prompt: "Si g ∈ G es un elemento de orden finito o(g) = n y m ∈ ℕ, ¿cuál es exactamente el orden de la potencia gᵐ?",
+        options: [
+            "n / m",
+            "n / mcd(n, m)",
+            "mcd(n, m)",
+            "n · m"
+        ],
+        correct: 1,
+        explanation: "Por el Lema 3 del Tema 1 de Álgebra, o(gᵐ) = n / gcd(n, m). Por ejemplo, en ℤ/6ℤ el elemento 1̄ tiene orden 6 y 2̄ tiene orden 6/gcd(6,2) = 3."
+    },
+    {
+        subject: "Álgebra I • Grupos Cíclicos",
+        prompt: "Si G = ⟨x⟩ es un grupo cíclico finito de orden n, ¿cuántos subgrupos tiene G de cada orden posible?",
+        options: [
+            "Tiene subgrupos de cualquier tamaño k ≤ n",
+            "Para cada divisor positivo d de n, existe EXACTAMENTE UN único subgrupo de orden d, que es ⟨x^(n/d)⟩",
+            "Tiene tantos subgrupos de orden d como elementos de orden d",
+            "Solo tiene los subgrupos triviales {1} y G"
+        ],
+        correct: 1,
+        explanation: "Todo subgrupo de un cíclico es cíclico y, si |G| = n, existe una biyección entre los divisores d | n y los subgrupos de G dada por d ↦ ⟨x^(n/d)⟩."
+    },
+    {
+        subject: "Álgebra I • Grupo Simétrico y Lagrange",
+        prompt: "En el grupo simétrico S₃ (|S₃| = 6), consideremos las transposiciones τ₁ = (1 2) y τ₂ = (1 3). ¿Qué subgrupo genera el conjunto { (1 2), (1 3) }?",
+        options: [
+            "Un subgrupo de orden 3",
+            "Un subgrupo de orden 4",
+            "Todo el grupo S₃",
+            "El conjunto {id, (1 2), (1 3)} que ya es un subgrupo"
+        ],
+        correct: 2,
+        explanation: "El subgrupo H = ⟨(1 2), (1 3)⟩ contiene al menos a id, (1 2), (1 3) y al producto (1 2)(1 3) = (1 3 2), luego |H| ≥ 4. Por el Teorema de Lagrange |H| divide a 6, así que |H| = 6 y H = S₃."
+    },
+    {
+        subject: "Álgebra I • Grupo Diédrico D₆",
+        prompt: "En el grupo diédrico D₆ = ⟨a, b | a³ = b² = 1, ba = a²b⟩ de simetrías del triángulo equilátero, ¿qué estructura tienen sus subgrupos propios?",
+        options: [
+            "Existen subgrupos propios no abelianos",
+            "Todo subgrupo propio de D₆ es cíclico (de orden 1, 2 o 3)",
+            "Todos sus subgrupos son normales",
+            "No tiene subgrupos de orden 3"
+        ],
+        correct: 1,
+        explanation: "Por el Teorema de Lagrange, el orden de cualquier subgrupo propio de D₆ divide a 6 y es menor que 6, luego es 1, 2 o 3. Como 2 y 3 son primos, todo subgrupo de orden primo es cíclico."
+    },
+    {
+        subject: "Álgebra I • Producto de Subgrupos",
+        prompt: "Sean H, K ≤ G dos subgrupos de un grupo G. ¿Cuál es la condición necesaria y suficiente para que el conjunto producto HK = {hk : h ∈ H, k ∈ K} sea un subgrupo de G?",
+        options: [
+            "Que H ∩ K = {1}",
+            "Que tanto H como K sean normales en G",
+            "Que HK = KH (como igualdad de conjuntos)",
+            "Que G sea abeliano"
+        ],
+        correct: 2,
+        explanation: "Por la Proposición 4 del Tema 2, HK ≤ G si y solo si HK = KH. En particular, si al menos uno de los dos subgrupos es normal en G (por ejemplo N ◁ G), entonces HN = NH y HN ≤ G."
+    },
+    {
+        subject: "Álgebra I • Homomorfismos y Fibras",
+        prompt: "Sea φ: G → H un homomorfismo de grupos y sea g ∈ G tal que φ(g) = h. ¿Cómo es la fibra o preimagen φ⁻¹(h) = {x ∈ G : φ(x) = h}?",
+        options: [
+            "Es un subgrupo normal de G",
+            "Es la clase lateral g ker(φ) = ker(φ) g (y si G es finito, tiene cardinal |ker(φ)|)",
+            "Consta únicamente del elemento g",
+            "Es isomorfa a φ(G)"
+        ],
+        correct: 1,
+        explanation: "φ(x) = φ(g) ⇔ φ(g⁻¹x) = 1_H ⇔ g⁻¹x ∈ ker(φ) ⇔ x ∈ g ker(φ). En particular, φ es inyectivo si y solo si ker(φ) = {1}."
+    },
+    {
+        subject: "Álgebra I • Teorema de Correspondencia",
+        prompt: "Sea N ◁ G un subgrupo normal y π: G → G/N la proyección canónica. ¿Qué establece el Teorema de Correspondencia?",
+        options: [
+            "Una biyección entre todos los subgrupos de G y todos los subgrupos de G/N",
+            "Una biyección que preserva inclusiones entre los subgrupos de G/N y los subgrupos L ≤ G que contienen a N (N ⊆ L ≤ G)",
+            "Que G/N es siempre un grupo abeliano",
+            "Que todo subgrupo de G es isomorfo a un subgrupo de G/N"
+        ],
+        correct: 1,
+        explanation: "Los subgrupos U ≤ G/N se corresponden biyectivamente con los subgrupos intermedios N ⊆ L ≤ G mediante U ↦ π⁻¹(U) y L ↦ L/N."
+    },
+    {
+        subject: "Álgebra I • Segundo y Tercer Teorema de Isomorfía",
+        prompt: "Sean H ≤ G un subgrupo cualquiera y N ◁ G un subgrupo normal. ¿Qué afirma el Segundo Teorema de Isomorfía?",
+        options: [
+            "Que H/N ≅ G/HN",
+            "Que H ∩ N ◁ H y se cumple el isomorfismo H / (H ∩ N) ≅ HN / N",
+            "Que (G/N) / (H/N) ≅ G/H para cualquier H ≤ G",
+            "Que HN es normal en G"
+        ],
+        correct: 1,
+        explanation: "Restringiendo la proyección π: G → G/N al subgrupo H, su imagen es HN/N y su núcleo es H ∩ N, por lo que el Primer Teorema de Isomorfía da H/(H ∩ N) ≅ HN/N."
+    },
+    {
+        subject: "Álgebra I • Grupos Simples",
+        prompt: "Un grupo G ≠ {1} es simple si sus únicos subgrupos normales son {1} y G. ¿Cuáles son TODOS los grupos simples que además son abelianos?",
+        options: [
+            "ℤ y todos los grupos cíclicos finitos Cₙ",
+            "Únicamente los grupos cíclicos de orden primo Cₚ (con p primo)",
+            "No existen grupos simples abelianos",
+            "El grupo alternado A₅ de orden 60"
+        ],
+        correct: 1,
+        explanation: "En un grupo abeliano todo subgrupo es normal. Por tanto, es simple si y solo si carece de subgrupos propios no triviales, lo que ocurre si y solo si G ≅ Cₚ con p primo (mientras que el menor simple NO abeliano tiene orden 60)."
+    },
+
+    // ================= TOPOLOGÍA GENERAL (12 PREGUNTAS) =================
+    {
+        subject: "Topología • Espacio de Sierpiński",
+        prompt: "Sea X = {a, b} con a ≠ b dotado de la topología de Sierpiński τ_S = {∅, X, {a}}. ¿Qué propiedades de separación y metrizabilidad tiene (X, τ_S)?",
+        options: [
+            "Es metrizable mediante la métrica discreta",
+            "Satisface el axioma T₀ (Kolmogorov), pero NO es T₁ (Fréchet) ni metrizable",
+            "Es T₁ pero no es T₂ (Hausdorff)",
+            "No satisface ni siquiera el axioma T₀"
+        ],
+        correct: 1,
+        explanation: "Es T₀ porque el abierto {a} contiene a 'a' y no a 'b'. Pero no es T₁ porque el único abierto que contiene a 'b' es X (que también contiene a 'a'), o equivalentemente porque {a} no es cerrado. Como todo métrico es T₂ ⇒ T₁, no es metrizable."
+    },
+    {
+        subject: "Topología • Topología Cofinita",
+        prompt: "En un conjunto infinito X dotado de la topología cofinita τ_f = {∅} ∪ {U ⊂ X : X \\ U es finito}, ¿cuál es la clausura Ā de un subconjunto A ⊂ X?",
+        options: [
+            "Ā = A para todo subconjunto A",
+            "Si A es finito entonces Ā = A, y si A es infinito entonces Ā = X",
+            "Ā = X para cualquier A ≠ ∅",
+            "Depende de si A es numerable o no numerable"
+        ],
+        correct: 1,
+        explanation: "En τ_f los conjuntos cerrados son exactamente X y los subconjuntos finitos. Si A es infinito, el único cerrado que lo contiene es el propio espacio total X, luego Ā = X."
+    },
+    {
+        subject: "Topología • Axiomas de Separación",
+        prompt: "Sea (X, τ) un espacio topológico con X infinito. ¿Cuál de las siguientes condiciones es equivalente a que (X, τ) sea un espacio T₁ (de Fréchet)?",
+        options: [
+            "Que todo punto tenga un entorno cerrado",
+            "Que todo subconjunto finito sea cerrado (es decir, que τ sea más fina que la topología cofinita: τ ⊃ τ_f)",
+            "Que toda sucesión convergente tenga un único límite",
+            "Que dos puntos distintos puedan separarse por abiertos disjuntos"
+        ],
+        correct: 1,
+        explanation: "(X, τ) es T₁ ⇔ para todo x ∈ X el conjunto unipuntual {x} es cerrado ⇔ todo conjunto finito es cerrado ⇔ τ contiene a la topología cofinita τ_f."
+    },
+    {
+        subject: "Topología • Recta de Sorgenfrey",
+        prompt: "En ℝ dotado de la topología de Sorgenfrey τ_{[)} (generada por la base de intervalos semiabiertos [a, b)), ¿cuál es el interior y la frontera del conjunto A = [1, 2)?",
+        options: [
+            "Int(A) = (1, 2) y ∂A = {1, 2}",
+            "Int(A) = [1, 2) y ∂A = {1}",
+            "Int(A) = [1, 2) y ∂A = ∅ (porque A es abierto y cerrado a la vez en τ_{[)})",
+            "Int(A) = [1, 2) y ∂A = {2}"
+        ],
+        correct: 2,
+        explanation: "A = [1, 2) es un abierto básico de τ_{[)}. Además, su complementario (-∞, 1) ∪ [2, ∞) es unión de abiertos en τ_{[)}, por lo que A también es cerrado (clopen). Así, Int(A) = Ā = [1, 2) y su frontera es ∂A = Ā \\ Int(A) = ∅."
+    },
+    {
+        subject: "Topología • Convergencia en Sorgenfrey",
+        prompt: "En la recta de Sorgenfrey (ℝ, τ_{[)}), ¿converge la sucesión xₙ = -1/n al punto x = 0 cuando n → ∞?",
+        options: [
+            "Sí, porque |-1/n - 0| → 0 y τ_{[)} tiene los mismos límites que la usual",
+            "No, porque [0, 1) es un entorno abierto de 0 en τ_{[)} que no contiene ningún término de la sucesión xₙ = -1/n",
+            "Converge tanto a 0 como a -1",
+            "Sí, porque τ_{[)} es más gruesa que la topología usual"
+        ],
+        correct: 1,
+        explanation: "Para converger a 0 en τ_{[)}, la sucesión debe entrar finalmente en todo entorno básico [0, ε) de 0, pero todos los términos -1/n son negativos. En τ_{[)} solo convergen a x las sucesiones que se acercan por la derecha (xₙ ≥ x)."
+    },
+    {
+        subject: "Topología • Axiomas de Numerabilidad",
+        prompt: "¿Qué axiomas de numerabilidad y separabilidad cumple la recta de Sorgenfrey (ℝ, τ_{[)})?",
+        options: [
+            "Cumple el IIAN (tiene base numerable) y es separable",
+            "Cumple el IAN (base de entornos numerable en cada punto) y es separable (ℚ es denso), pero NO cumple el IIAN",
+            "No cumple ni el IAN ni el IIAN",
+            "En cualquier espacio topológico ser separable equivale a cumplir el IIAN"
+        ],
+        correct: 1,
+        explanation: "En cada x ∈ ℝ la familia {[x, x + 1/n) : n ∈ ℕ} es base numerable de entornos (es IAN), y ℚ corta a todo [a, b) (es separable). Sin embargo, cualquier base B de τ_{[)} debe contener para cada x ∈ ℝ un elemento cuyo ínfimo sea x, luego |B| ≥ |ℝ| y no es IIAN."
+    },
+    {
+        subject: "Topología • Comparación de Topologías",
+        prompt: "Sean τ y τ' dos topologías sobre un mismo conjunto X tales que τ ⊂ τ' (τ' es más fina que τ). Para cualquier subconjunto A ⊂ X, ¿qué relación hay entre sus interiores y clausuras?",
+        options: [
+            "Int_τ(A) ⊂ Int_{τ'}(A)  y  Cl_τ(A) ⊃ Cl_{τ'}(A)",
+            "Int_τ(A) ⊃ Int_{τ'}(A)  y  Cl_τ(A) ⊂ Cl_{τ'}(A)",
+            "Int_τ(A) ⊂ Int_{τ'}(A)  y  Cl_τ(A) ⊂ Cl_{τ'}(A)",
+            "Tienen exactamente el mismo interior y clausura"
+        ],
+        correct: 0,
+        explanation: "Al haber más conjuntos abiertos en τ', la unión de abiertos contenidos en A es mayor (Int_τ(A) ⊂ Int_{τ'}(A)), y al haber más cerrados en τ', la intersección de cerrados que contienen a A es más pequeña (Cl_{τ'}(A) ⊂ Cl_τ(A))."
+    },
+    {
+        subject: "Topología • Orden Lexicográfico",
+        prompt: "En el plano ℝ² dotado de la topología del orden lexicográfico τ_lex, ¿qué familia forma una base minimal de abiertos?",
+        options: [
+            "Los discos abiertos euclídeos B(x, r)",
+            "Los intervalos verticales abiertos de Tipo I: {a} × (b, c) con a ∈ ℝ y b < c",
+            "Las rectas horizontales ℝ × {b}",
+            "Únicamente las franjas abiertas (a, c) × ℝ"
+        ],
+        correct: 1,
+        explanation: "Toda franja de Tipo II en el orden lexicográfico puede expresarse como unión de intervalos verticales abiertos {x} × (b, c), por lo que los segmentos verticales abiertos bastan para generar τ_lex."
+    },
+    {
+        subject: "Topología • Continuidad entre Topologías",
+        prompt: "Considera la aplicación identidad id(x) = x entre ℝ con la topología usual τ_u y ℝ con la topología de Sorgenfrey τ_{[)}. ¿Cuál de las dos direcciones es continua?",
+        options: [
+            "id: (ℝ, τ_u) → (ℝ, τ_{[)}) es continua, pero su inversa no",
+            "id: (ℝ, τ_{[)}) → (ℝ, τ_u) es continua, pero id: (ℝ, τ_u) → (ℝ, τ_{[)}) NO es continua",
+            "Ambas son continuas (es un homeomorfismo)",
+            "Ninguna de las dos es continua"
+        ],
+        correct: 1,
+        explanation: "Como τ_u ⊂ τ_{[)}, todo abierto V ∈ τ_u pertenece a τ_{[)}, luego id: (ℝ, τ_{[)}) → (ℝ, τ_u) es continua. En cambio, [0, 1) ∈ τ_{[)} pero su preimagen [0, 1) ∉ τ_u."
+    },
+    {
+        subject: "Topología • Unicidad del Límite",
+        prompt: "En el espacio de Sierpiński X = {x, y} con τ = {∅, {x}, X}, ¿a qué puntos converge la sucesión constante xₙ = x para todo n ∈ ℕ?",
+        options: [
+            "Únicamente al punto x",
+            "Tanto a x como a y simultáneamente",
+            "No converge a ningún punto",
+            "Únicamente al punto y"
+        ],
+        correct: 1,
+        explanation: "En espacios que no son de Hausdorff (T₂) el límite de una sucesión puede no ser único: como el único entorno abierto de y es todo X = {x, y}, todos los términos xₙ = x están dentro de todo entorno de y, luego xₙ → y además de xₙ → x."
+    },
+
+    // ================= PROBABILIDAD I Y TEORÍA DE LA MEDIDA (10 PREGUNTAS) =================
+    {
+        subject: "Probabilidad I • Sucesiones de Sucesos",
+        prompt: "Dada una sucesión de sucesos {Aₙ : n ≥ 1} en un espacio muestral Ω, ¿qué representa exactamente el límite superior lim sup_{n→∞} Aₙ = ⋂_{k=1}^∞ ⋃_{n=k}^∞ Aₙ?",
+        options: [
+            "El conjunto de resultados ω ∈ Ω que pertenecen a todos los Aₙ salvo a un número finito de ellos",
+            "El conjunto de resultados ω ∈ Ω que pertenecen a infinitos sucesos Aₙ",
+            "La unión de todos los Aₙ",
+            "El conjunto vacío si los Aₙ no son monótonos"
+        ],
+        correct: 1,
+        explanation: "ω ∈ ⋂_{k=1}^∞ ⋃_{n=k}^∞ Aₙ significa que para todo k ≥ 1 existe algún n ≥ k tal que ω ∈ Aₙ, es decir, ω ocurre en infinitos índices n (mientras que lim inf Aₙ son los ω que ocurren para todo n salvo finitos)."
+    },
+    {
+        subject: "Probabilidad I • Independencia de Sucesos",
+        prompt: "En el lanzamiento de dos monedas equilibradas Ω = {1, 2, 3, 4} con P({i}) = 1/4, sean A = {1, 2}, B = {2, 3} y C = {1, 3}. ¿Qué relación de independencia cumplen A, B y C?",
+        options: [
+            "Son mutuamente independientes",
+            "Son independientes dos a dos (P(A∩B)=P(A)P(B), etc.), pero NO son mutuamente independientes porque P(A∩B∩C) = 0 ≠ 1/8",
+            "Cumplen P(A∩B∩C) = P(A)P(B)P(C) pero no son independientes dos a dos",
+            "Son sucesos incompatibles"
+        ],
+        correct: 1,
+        explanation: "Cada intersección de dos tiene probabilidad 1/4 = (1/2)(1/2), por lo que son independientes dos a dos. Sin embargo, A ∩ B ∩ C = ∅ tiene probabilidad 0 ≠ (1/2)³ = 1/8."
+    },
+    {
+        subject: "Probabilidad I • Funciones de Distribución",
+        prompt: "Sea X una variable aleatoria con función de distribución F(x) = P(X ≤ x). ¿Cuál de las siguientes propiedades cumple SIEMPRE F en todo punto a ∈ ℝ?",
+        options: [
+            "Es continua tanto por la izquierda como por la derecha",
+            "Es continua por la derecha (F(a⁺) = F(a)), y el salto F(a) - F(a⁻) es exactamente igual a P(X = a)",
+            "Es continua por la izquierda (F(a⁻) = F(a))",
+            "Es estrictamente creciente en todo ℝ"
+        ],
+        correct: 1,
+        explanation: "Por continuidad de la medida sobre la sucesión decreciente (-∞, a + 1/n] ↓ (-∞, a], F es siempre continua por la derecha, mientras que por la izquierda (-∞, a - 1/n] ↑ (-∞, a) da F(a⁻) = P(X < a), de modo que P(X = a) = F(a) - F(a⁻)."
+    },
+    {
+        subject: "Probabilidad I • Cambio de Variable",
+        prompt: "Si X ~ U([0, 1]) es una variable aleatoria uniforme en [0, 1], ¿cuál es la función de densidad f_Y(y) de la variable transformada Y = log(X)?",
+        options: [
+            "f_Y(y) = 1/y para y ∈ (0, 1]",
+            "f_Y(y) = eʸ para y ∈ (-∞, 0] (y 0 para y > 0)",
+            "f_Y(y) = e⁻ʸ para y ∈ [0, ∞)",
+            "f_Y(y) = 1 para y ∈ (-∞, 0]"
+        ],
+        correct: 1,
+        explanation: "Para y ≤ 0, la inversa de y = log(x) es x = eʸ ∈ (0, 1], con jacobiano |dx/dy| = eʸ. Así, f_Y(y) = f_X(eʸ)|dx/dy| = 1 · eʸ = eʸ en (-∞, 0]."
+    },
+    {
+        subject: "Probabilidad I • Transformaciones No Monótonas",
+        prompt: "Sea X una variable aleatoria continua con densidad f_X(x) = (3/2)x² en [-1, 1] (y 0 fuera). Si definimos Y = X², ¿cuál es la densidad f_Y(y) de Y en (0, 1]?",
+        options: [
+            "f_Y(y) = (3/4)√y",
+            "f_Y(y) = (3/2)√y (sumando las contribuciones de las dos ramas x = -√y y x = +√y)",
+            "f_Y(y) = (3/2)y",
+            "f_Y(y) = 3y²"
+        ],
+        correct: 1,
+        explanation: "Como g(x) = x² no es inyectiva en [-1, 1], se divide en [-1, 0) y [0, 1]. Cada rama aporta (3/2)(±√y)² · |1/(2√y)| = (3/4)√y, y al sumarlas resulta f_Y(y) = (3/2)√y en [0, 1]."
+    },
+    {
+        subject: "Probabilidad I • Existencia de Esperanza",
+        prompt: "Considera una variable aleatoria continua con densidad de Cauchy f(x) = 1 / [π(1 + x²)] en ℝ, o una discreta con P(X = n) = 6 / (π² n²) para n ∈ ℕ. ¿Qué tienen en común respecto a su esperanza matemática E[X]?",
+        options: [
+            "Ambas tienen esperanza finita igual a 0 y 1 respectivamente",
+            "Ninguna de las dos es integrable (no tienen esperanza finita) porque ∫ |x|/(1+x²) dx = +∞ y ∑ n/(n²) = +∞",
+            "No son distribuciones de probabilidad válidas porque no suman/integran 1",
+            "Su esperanza es π/2"
+        ],
+        correct: 1,
+        explanation: "Aunque ∫_{-∞}^∞ f(x)dx = 1 y ∑ 6/(π²n²) = 1 (por el problema de Basilea), para que exista E[X] se exige convergencia absoluta: pero ∫ |x|/(1+x²) dx = +∞ y ∑ n · 6/(π²n²) = (6/π²) ∑ (1/n) = +∞."
+    },
+
+    // ================= CÁLCULO I CONCEPTUAL Y CONEXIONES (8 PREGUNTAS) =================
+    {
+        subject: "Cálculo y Análisis • Teorema de Reordenación de Riemann",
+        prompt: "Sea ∑ xₙ una serie de números reales que es convergente pero NO absolutamente convergente (como ∑ (-1)ⁿ⁺¹/n). ¿Qué afirma el Teorema de Riemann sobre sus reordenaciones ∑ x_{π(n)}?",
+        options: [
+            "Que cualquier permutación biyectiva π: ℕ → ℕ conserva la suma de la serie",
+            "Que para cualquier s ∈ ℝ (o ±∞) existe una permutación π de ℕ tal que la serie reordenada converge exactamente a s (o diverge a ±∞)",
+            "Que toda reordenación diverge",
+            "Que es incondicionalmente convergente"
+        ],
+        correct: 1,
+        explanation: "Una serie en ℝ es incondicionalmente convergente si y solo si es absolutamente convergente. Si converge condicionalmente, las subseries de términos positivos y negativos divergen a +∞ y -∞, permitiendo alcanzar cualquier límite s ∈ ℝ reordenando bloques."
+    },
+    {
+        subject: "Cálculo y Topología • Función de Thomae",
+        prompt: "Sea T: ℝ → ℝ la función de Thomae ('Estrellas sobre Babilonia'), definida por T(p/q) = 1/q si p/q ∈ ℚ es irreducible (q > 0) y T(x) = 0 si x ∈ ℝ \\ ℚ. ¿En qué puntos es continua T?",
+        options: [
+            "No es continua en ningún punto de ℝ",
+            "Es continua en todos los números irracionales (ℝ \\ ℚ) y discontinua en todos los racionales (ℚ)",
+            "Es continua en ℚ y discontinua en ℝ \\ ℚ",
+            "Solo es continua en x = 0"
+        ],
+        correct: 1,
+        explanation: "En cualquier irracional x, dado ε > 0 solo hay finitos racionales con denominador q ≤ 1/ε cerca de x, por lo que existe un entorno sin ellos y T es continua en x. En cambio, en todo racional p/q vale 1/q > 0 pero se aproxima por irracionales donde vale 0."
+    },
+    {
+        subject: "Cálculo y Topología • Continuidad de la Inversa",
+        prompt: "Sea f(x) = x si x ∈ [0, 1) y f(2) = 1, definida en el dominio A = [0, 1) ∪ {2}. Sabemos que f es continua e inyectiva en A con imagen [0, 1]. ¿Es continua su función inversa f⁻¹: [0, 1] → A?",
+        options: [
+            "Sí, porque la inversa de toda función continua e inyectiva es siempre continua",
+            "No, f⁻¹ es discontinua en y = 1 (pues yₙ = 1 - 1/n → 1 pero f⁻¹(yₙ) → 1 ≠ f⁻¹(1) = 2); el teorema exige que el dominio A sea un intervalo",
+            "No es continua porque f no es continua en x = 2",
+            "Sí es continua porque [0, 1] es compacto"
+        ],
+        correct: 1,
+        explanation: "Como x = 2 es un punto aislado de A = [0, 1) ∪ {2}, f es automáticamente continua en 2. Sin embargo, al no ser A un intervalo, f⁻¹ salta bruscamente de [0, 1) al punto 2 en y = 1."
+    },
+    {
+        subject: "Cálculo y Análisis • Criterio de la Raíz vs Cociente",
+        prompt: "Para la serie ∑ aₙ con aₙ = (3 + (-1)ⁿ) / 2ⁿ, ¿qué ocurre al aplicar los criterios del cociente (d'Alembert) y de la raíz (Cauchy)?",
+        options: [
+            "Ambos criterios tienen límite 1/2 y deciden que converge",
+            "El cociente a_{n+1}/aₙ oscila entre 1 y 1/4 (no tiene límite), mientras que la raíz n-ésima √(aₙ) tiende a 1/2 < 1 y demuestra que converge",
+            "El criterio del cociente es estrictamente más potente que el de la raíz",
+            "La serie diverge porque el cociente alcanza el valor 1"
+        ],
+        correct: 1,
+        explanation: "Si existe el límite del cociente también existe el de la raíz y coinciden, pero el recíproco es falso: aquí a_{n+1}/aₙ vale 1 para n impar y 1/4 para n par, mientras que (aₙ)^(1/n) → 1/2 < 1."
+    },
+    {
+        subject: "Cálculo y Análisis • Propiedad del Valor Intermedio",
+        prompt: "Sea A ⊂ ℝ un subconjunto que NO es un intervalo. ¿Qué podemos afirmar siempre sobre las funciones continuas definidas en A?",
+        options: [
+            "Toda función continua f: A → ℝ sigue transformando A en un intervalo",
+            "Existe una función continua f: A → ℝ cuya imagen f(A) consta exactamente de dos puntos {-1, 1}",
+            "Ninguna función en A puede ser continua",
+            "Toda función continua en A es constante"
+        ],
+        correct: 1,
+        explanation: "Al no ser A un intervalo, existen x < z < y con x, y ∈ A y z ∉ A. La función f(t) = (t - z)/|t - z| es continua en todo A (pues t ≠ z) y su imagen es exactamente {-1, 1} (A es disconexo)."
+    },
+    {
+        subject: "Cálculo y Análisis • Sucesiones de Cauchy en ℚ",
+        prompt: "La sucesión recursiva x₁ = 2, x_{n+1} = (1/2)(xₙ + 2/xₙ) está formada exclusivamente por números racionales. ¿Qué propiedad fundamental ilustra en el espacio métrico (ℚ, |·|)?",
+        options: [
+            "Que (ℚ, |·|) es un espacio métrico completo",
+            "Que {xₙ} es una sucesión de Cauchy en ℚ que NO converge en ℚ (pues su límite en ℝ es √2 ∉ ℚ), probando que ℚ no es completo",
+            "Que existen sucesiones monótonas acotadas en ℝ que no son de Cauchy",
+            "Que no está acotada inferiormente"
+        ],
+        correct: 1,
+        explanation: "La propiedad de ser de Cauchy es intrínseca a los términos de la sucesión, pero la convergencia depende de que el punto límite pertenezca al espacio considerado."
+    },
+    {
+        subject: "Cálculo y Lógica • Indeterminaciones y Décimo Problema de Hilbert",
+        prompt: "Según el Teorema de Davis-Putnam-Robinson-Matiyasevich aplicado a sucesiones reales, ¿por qué existen límites de cocientes aₙ/bₙ (con aₙ → 0 y bₙ → 0) cuyo valor es algorítmicamente indecidible?",
+        options: [
+            "Porque el límite puede no ser único en ℝ",
+            "Porque no existe ningún algoritmo general capaz de decidir si un polinomio diofántico arbitrario P(x₁,...,xₖ) = 0 tiene soluciones enteras",
+            "Porque la función sinc_π(t) no es continua",
+            "Porque las sucesiones monótonas acotadas no siempre convergen"
+        ],
+        correct: 1,
+        explanation: "Construyendo uₙ ∈ {0, 1} mediante productos de 1 - sinc_π(P(m₁,...,mₖ))² en cajas [-n, n]ᵏ, la sucesión es creciente y acotada (converge a 1 si P=0 tiene solución entera y a 0 si no), pero el Décimo Problema de Hilbert demuestra que no hay algoritmo general para decidirlo."
+    },
+    {
+        subject: "Cálculo y Series • Criterio de Condensación de Cauchy",
+        prompt: "Si {aₙ} es una sucesión decreciente de términos positivos (aₙ > 0), ¿con qué serie numérica compara el Criterio de Condensación de Cauchy la serie ∑_{n=1}^∞ aₙ?",
+        options: [
+            "Con ∑_{n=1}^∞ n · aₙ",
+            "Con ∑_{k=0}^∞ 2ᵏ a_{2ᵏ}",
+            "Con ∑_{n=1}^∞ (aₙ)²",
+            "Con ∑_{k=1}^∞ a_{k²}"
+        ],
+        correct: 1,
+        explanation: "Agrupando en bloques de longitud 2ᵏ se cumple A_{2ⁿ-1} ≤ ∑_{k=0}^{n-1} 2ᵏ a_{2ᵏ} ≤ 2 A_{2ⁿ⁻¹}, por lo que ∑ aₙ converge si y solo si converge la serie condensada ∑ 2ᵏ a_{2ᵏ}."
     }
 ];
 
 let currentQ = {};
 let answered = false;
+let isDoubleOrNothing = false;
+let countdownInterval = null;
+
+// Comprobar al abrir si el usuario está castigado (bloqueo temporal activo)
+function checkLockoutStatus() {
+    const lockoutUntil = parseInt(localStorage.getItem('studygate_lockout_until') || '0', 10);
+    const now = Date.now();
+    
+    if (lockoutUntil > now) {
+        showLockoutScreen(lockoutUntil);
+        return true;
+    } else {
+        localStorage.removeItem('studygate_lockout_until');
+        document.getElementById('lockoutCard').style.display = 'none';
+        document.getElementById('quizCard').style.display = 'block';
+        return false;
+    }
+}
+
+function triggerLockout(minutes, message) {
+    const lockoutUntil = Date.now() + (minutes * 60 * 1000);
+    localStorage.setItem('studygate_lockout_until', lockoutUntil.toString());
+    localStorage.setItem('studygate_lockout_msg', message);
+    showLockoutScreen(lockoutUntil);
+}
+
+function showLockoutScreen(lockoutUntil) {
+    document.getElementById('quizCard').style.display = 'none';
+    const lockoutCard = document.getElementById('lockoutCard');
+    lockoutCard.style.display = 'block';
+    
+    const savedMsg = localStorage.getItem('studygate_lockout_msg');
+    if (savedMsg) {
+        document.getElementById('lockoutReason').textContent = savedMsg;
+    }
+    
+    const badge = document.getElementById('badge');
+    badge.innerHTML = "⛔ Penalización Activa";
+    badge.style.background = "rgba(255, 69, 58, 0.25)";
+    badge.style.color = "#ff453a";
+
+    if (countdownInterval) clearInterval(countdownInterval);
+    
+    function updateTimer() {
+        const remainingMs = lockoutUntil - Date.now();
+        if (remainingMs <= 0) {
+            clearInterval(countdownInterval);
+            localStorage.removeItem('studygate_lockout_until');
+            localStorage.removeItem('studygate_lockout_msg');
+            isDoubleOrNothing = false;
+            checkLockoutStatus();
+            loadQuestion();
+            return;
+        }
+        const totalSecs = Math.ceil(remainingMs / 1000);
+        const mins = Math.floor(totalSecs / 60);
+        const secs = totalSecs % 60;
+        document.getElementById('timerDisplay').textContent = 
+            String(mins).padStart(2, '0') + ":" + String(secs).padStart(2, '0');
+    }
+    
+    updateTimer();
+    countdownInterval = setInterval(updateTimer, 1000);
+}
 
 function loadQuestion() {
+    if (checkLockoutStatus()) return;
+    
     answered = false;
     document.getElementById('explanation').style.display = 'none';
-    document.getElementById('unlockBtn').style.display = 'none';
-    document.getElementById('penalty').style.display = 'none';
+    const actionArea = document.getElementById('actionArea');
+    actionArea.style.display = 'none';
+    actionArea.innerHTML = '';
     
-    currentQ = questions[Math.floor(Math.random() * questions.length)];
+    const badge = document.getElementById('badge');
+    const subtitle = document.getElementById('subtitle');
+    
+    if (isDoubleOrNothing) {
+        badge.innerHTML = "🎲 MODO DOBLE O NADA";
+        badge.style.background = "rgba(255, 159, 10, 0.2)";
+        badge.style.color = "#ff9f0a";
+        subtitle.textContent = "Acierta = 30 min libres • Falla = 30 min bloqueado";
+    } else {
+        badge.innerHTML = "🔒 Entretenimiento Bloqueado";
+        badge.style.background = "rgba(255, 69, 58, 0.15)";
+        badge.style.color = "#ff453a";
+        subtitle.textContent = "1 fallo = 15 min bloqueado o Doble o Nada";
+    }
+    
+    // Evitar que salga exactamente la misma pregunta seguida en el Doble o Nada
+    let nextQ;
+    do {
+        nextQ = questions[Math.floor(Math.random() * questions.length)];
+    } while (questions.length > 1 && nextQ.prompt === currentQ.prompt);
+    
+    currentQ = nextQ;
     document.getElementById('subject').textContent = currentQ.subject;
     document.getElementById('prompt').textContent = currentQ.prompt;
     
@@ -222,20 +889,74 @@ function selectOption(idx, btn) {
     answered = true;
     
     const buttons = document.querySelectorAll('.option-btn');
+    const exp = document.getElementById('explanation');
+    const actionArea = document.getElementById('actionArea');
+    const badge = document.getElementById('badge');
+    
     if (idx === currentQ.correct) {
+        // RESPUESTA CORRECTA
         btn.classList.add('correct');
-        const exp = document.getElementById('explanation');
         exp.textContent = "✅ " + currentQ.explanation;
         exp.style.display = 'block';
-        document.getElementById('unlockBtn').style.display = 'block';
-        document.getElementById('badge').innerHTML = "🔓 Reto Superado";
-        document.getElementById('badge').style.background = "rgba(48, 209, 88, 0.15)";
-        document.getElementById('badge').style.color = "#30d158";
+        
+        const rewardMinutes = isDoubleOrNothing ? 30 : 15;
+        badge.innerHTML = isDoubleOrNothing ? "🏆 ¡Doble o Nada Ganado!" : "🔓 Reto Superado";
+        badge.style.background = "rgba(48, 209, 88, 0.18)";
+        badge.style.color = "#30d158";
+        
+        // Pasa el tiempo como parámetro 'input' al Atajo ConcederPase
+        const unlockLink = document.createElement('a');
+        unlockLink.className = 'btn btn-success';
+        unlockLink.href = `shortcuts://run-shortcut?name=ConcederPase&input=text&text=${rewardMinutes}`;
+        unlockLink.textContent = `🔓 Activar ${rewardMinutes} min de acceso`;
+        
+        actionArea.appendChild(unlockLink);
+        actionArea.style.display = 'flex';
+        isDoubleOrNothing = false;
+        
     } else {
+        // RESPUESTA INCORRECTA
         btn.classList.add('wrong');
         buttons[currentQ.correct].classList.add('correct');
-        document.getElementById('penalty').style.display = 'block';
-        setTimeout(loadQuestion, 3200);
+        exp.textContent = "❌ " + currentQ.explanation;
+        exp.style.display = 'block';
+        
+        if (!isDoubleOrNothing) {
+            // Primer fallo: ofrecer aceptar 15 min de bloqueo o jugar Doble o Nada
+            badge.innerHTML = "⚠️ Has fallado la pregunta";
+            
+            const doubleBtn = document.createElement('button');
+            doubleBtn.className = 'btn btn-double';
+            doubleBtn.textContent = "🎲 Jugar DOBLE O NADA (30m premio / 30m castigo)";
+            doubleBtn.onclick = () => {
+                isDoubleOrNothing = true;
+                loadQuestion();
+            };
+            
+            const surrenderBtn = document.createElement('button');
+            surrenderBtn.className = 'btn btn-surrender';
+            surrenderBtn.textContent = "⏳ Aceptar bloqueo de 15 minutos";
+            surrenderBtn.onclick = () => {
+                triggerLockout(15, "Has fallado la pregunta inicial y has aceptado la penalización de 15 minutos sin entretenimiento.");
+            };
+            
+            actionArea.appendChild(doubleBtn);
+            actionArea.appendChild(surrenderBtn);
+            actionArea.style.display = 'flex';
+        } else {
+            // Falló el Doble o Nada -> Bloqueo directo de 30 minutos tras leer la explicación 3.5s
+            badge.innerHTML = "💀 Doble o Nada Perdido (30 min)";
+            const msgBtn = document.createElement('button');
+            msgBtn.className = 'btn btn-surrender';
+            msgBtn.textContent = "Bloqueando durante 30 minutos en 4s...";
+            actionArea.appendChild(msgBtn);
+            actionArea.style.display = 'flex';
+            
+            setTimeout(() => {
+                isDoubleOrNothing = false;
+                triggerLockout(30, "Has perdido el Doble o Nada. StudyGate permanecerá bloqueado durante 30 minutos completos.");
+            }, 4000);
+        }
     }
 }
 
